@@ -45,6 +45,13 @@ class DeductionType(Enum):
     HOME_LOAN_INTEREST = "home_loan_interest"
     NEW_HOME_CONSTRUCTION = "new_home"
     VISUAL_ART = "visual_art"
+    SOLAR_ROOFTOP = "solar_rooftop"            # Solar Rooftop 2569-2571
+    SOCIAL_ENTERPRISE = "social_enterprise"    # วิสาหกิจเพื่อสังคม
+    ENERGY_SAVING = "energy_saving"            # ฉลากประหยัดไฟฟ้า 5 ดาว
+    CCTV = "cctv"                              # กล้องวงจรปิด เขตพัฒนาพิเศษ
+
+    # Group B (cont.): Thai ESGX — สับเปลี่ยนจาก LTF (2569+)
+    THAI_ESGX = "thai_esgx"
 
     # Group D: บริจาค
     DONATION_DOUBLE = "donation_double"
@@ -60,6 +67,14 @@ RETIREMENT_GROUP_TYPES = {
     DeductionType.GPF,
     DeductionType.PRIVATE_TEACHER_FUND,
     DeductionType.RMF,
+}
+
+# PND94-specific retirement group: only annuity + RMF + กอช.
+# (no PVD, กบข., กองทุนครูเอกชน — those are for 40(1) only)
+RETIREMENT_GROUP_TYPES_PND94 = {
+    DeductionType.LIFE_INSURANCE_ANNUITY,
+    DeductionType.RMF,
+    DeductionType.NATIONAL_SAVINGS_FUND,
 }
 
 # Mapping: deduction type → group
@@ -81,11 +96,16 @@ DEDUCTION_GROUP_MAP = {
     DeductionType.PRIVATE_TEACHER_FUND: DeductionGroup.INSURANCE_SAVING,
     DeductionType.RMF: DeductionGroup.INSURANCE_SAVING,
     DeductionType.THAI_ESG: DeductionGroup.INSURANCE_SAVING,
+    DeductionType.THAI_ESGX: DeductionGroup.INSURANCE_SAVING,
     DeductionType.SOCIAL_SECURITY: DeductionGroup.INSURANCE_SAVING,
     DeductionType.EASY_E_RECEIPT: DeductionGroup.STIMULUS,
     DeductionType.HOME_LOAN_INTEREST: DeductionGroup.STIMULUS,
     DeductionType.NEW_HOME_CONSTRUCTION: DeductionGroup.STIMULUS,
     DeductionType.VISUAL_ART: DeductionGroup.STIMULUS,
+    DeductionType.SOLAR_ROOFTOP: DeductionGroup.STIMULUS,
+    DeductionType.SOCIAL_ENTERPRISE: DeductionGroup.STIMULUS,
+    DeductionType.ENERGY_SAVING: DeductionGroup.STIMULUS,
+    DeductionType.CCTV: DeductionGroup.STIMULUS,
     DeductionType.DONATION_DOUBLE: DeductionGroup.DONATION,
     DeductionType.DONATION_GENERAL: DeductionGroup.DONATION,
     DeductionType.POLITICAL_PARTY: DeductionGroup.DONATION,
