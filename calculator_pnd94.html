@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คำนวณภาษี ภ.ง.ด. 94 ครึ่งปี 2569</title>
+<style>
+  :root {
+    --primary: #1a5632;
+    --primary-light: #e8f5e9;
+    --accent: #c7b47a;
+    --bg: #f7f8fa;
+    --card: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --red: #dc2626;
+    --green: #16a34a;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 20px 16px 80px;
+  }
+
+  header {
+    background: var(--primary);
+    color: white;
+    padding: 32px 20px;
+    text-align: center;
+    margin-bottom: 24px;
+    border-radius: var(--radius);
+  }
+  header h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+  header p { font-size: 0.9rem; opacity: 0.85; }
+  .badge-half {
+    display: inline-block;
+    background: var(--accent);
+    color: #1e293b;
+    padding: 2px 12px;
+    border-radius: 99px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-light);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full-width { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-light);
+    margin-bottom: 4px;
+  }
+  label .hint {
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  input[type="text"].money-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    text-align: right;
+  }
+  input[type="text"].money-input:focus { outline: none; border-color: var(--primary); }
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { outline: none; border-color: var(--primary); }
+  input[type="text"].money-input.capped {
+    border-color: var(--accent);
+    background: #fffbeb;
+  }
+  .cap-hint {
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-top: 2px;
+    min-height: 1em;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: white;
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+  .btn:hover { background: #14432a; }
+
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .result-header {
+    background: var(--primary);
+    color: white;
+    padding: 24px;
+    border-radius: var(--radius);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .result-header .tax-amount {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 8px 0;
+  }
+  .result-header .tax-label { font-size: 0.95rem; opacity: 0.85; }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .result-table th,
+  .result-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .result-table th {
+    font-weight: 600;
+    color: var(--text-light);
+    font-size: 0.8rem;
+  }
+  .result-table td.amount {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .result-table tr.total-row td {
+    font-weight: 700;
+    border-top: 2px solid var(--primary);
+    color: var(--primary);
+  }
+
+  .bracket-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+  }
+  .bracket-bar .bar {
+    flex: 1;
+    height: 22px;
+    background: var(--primary-light);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bracket-bar .bar-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+  .bracket-bar .rate { width: 40px; text-align: right; font-weight: 600; }
+  .bracket-bar .tax-val { width: 90px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .comparison-box {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .compare-item {
+    flex: 1;
+    padding: 16px;
+    border-radius: 8px;
+    text-align: center;
+    border: 2px solid var(--border);
+  }
+  .compare-item.chosen {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+  .compare-item .method-name { font-size: 0.85rem; color: var(--text-light); }
+  .compare-item .method-amount { font-size: 1.3rem; font-weight: 700; margin-top: 4px; }
+  .compare-item .method-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--primary);
+    color: white;
+  }
+
+  .collapsible-toggle {
+    cursor: pointer;
+    user-select: none;
+  }
+  .collapsible-toggle::before {
+    content: '▶ ';
+    font-size: 0.7rem;
+    display: inline-block;
+  }
+  .collapsible-toggle.open::before { content: '▼ '; }
+  .collapsible-content { display: none; margin-top: 8px; }
+  .collapsible-content.open { display: block; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .footer-note a { color: var(--primary); }
+
+  .nav-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.85rem;
+    text-decoration: underline;
+  }
+  .nav-link:hover { color: white; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>คำนวณภาษี ภ.ง.ด. 94</h1>
+    <p>ครึ่งปี 2569 (ม.ค. - มิ.ย.) เฉพาะเงินได้ 40(5)-40(8)</p>
+    <span class="badge-half">ยื่นครึ่งปี</span>
+    <br><a href="calculator.html" class="nav-link">→ ไปยัง ภ.ง.ด. 90/91 (เต็มปี)</a>
+  </header>
+
+  <!-- ===== INCOME — เฉพาะ 40(5)-40(8) ===== -->
+  <div class="card">
+    <div class="card-title">เงินได้พึงประเมิน (ม.ค. - มิ.ย.)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>40(5) ค่าเช่าทรัพย์สิน</label>
+        <input type="text" class="money-input" id="income_405" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>ประเภททรัพย์สิน 40(5)</label>
+        <select id="income_405_sub">
+          <option value="building">บ้าน/อาคาร (30%)</option>
+          <option value="farmland">ที่ดินเกษตร (20%)</option>
+          <option value="other_land">ที่ดินอื่น (15%)</option>
+          <option value="vehicle">ยานพาหนะ (30%)</option>
+          <option value="other_property">ทรัพย์สินอื่น (10%)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>40(6) วิชาชีพอิสระ</label>
+        <input type="text" class="money-input" id="income_406" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>ประเภทวิชาชีพ 40(6)</label>
+        <select id="income_406_sub">
+          <option value="medical">การแพทย์ (60%)</option>
+          <option value="law">กฎหมาย/วิศวกรรม/บัญชี (30%)</option>
+          <option value="other_profession">อื่นๆ (30%)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>40(7) รับเหมา <span class="hint">เหมา 60%</span></label>
+        <input type="text" class="money-input" id="income_407" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>40(8) เงินได้อื่นๆ <span class="hint">เหมา 40%</span></label>
+        <input type="text" class="money-input" id="income_408" placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DEDUCTIONS GROUP A ===== -->
+  <div class="card">
+    <div class="card-title">ค่าลดหย่อน — ส่วนตัวและครอบครัว (ครึ่งปี)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>สถานะ</label>
+        <select id="filing_status">
+          <option value="single">โสด</option>
+          <option value="married_sep">สมรส (แยกยื่น)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>คู่สมรสไม่มีเงินได้</label>
+        <select id="spouse_no_income">
+          <option value="no">ไม่ใช่ / ไม่มีคู่สมรส</option>
+          <option value="yes">ใช่ (ลดหย่อน 30,000)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>จำนวนบุตร (เกิดก่อน 2561) <span class="hint">คนละ 15,000</span></label>
+        <input type="number" id="child_count" min="0" max="20" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>จำนวนบุตรคนที่ 2+ (เกิดตั้งแต่ 2561) <span class="hint">คนละ 30,000</span></label>
+        <input type="number" id="child_2018_count" min="0" max="20" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>ค่าฝากครรภ์/ทำคลอด <span class="hint">ไม่เกิน 30,000/ครรภ์</span></label>
+        <input type="text" class="money-input" id="pregnancy" data-max="30000" placeholder="0">
+        <div class="cap-hint" id="pregnancy_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>จำนวนบิดา/มารดา (อายุ 60+) <span class="hint">คนละ 15,000</span></label>
+        <input type="number" id="parent_count" min="0" max="4" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>จำนวนผู้พิการ/ทุพพลภาพ <span class="hint">คนละ 30,000</span></label>
+        <input type="number" id="disabled_count" min="0" max="10" placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DEDUCTIONS GROUP B ===== -->
+  <div class="card">
+    <div class="card-title">ค่าลดหย่อน — ประกันและการออม (ครึ่งปี)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>เบี้ยประกันชีวิต <span class="hint">กรณีพิเศษ: ส่วนแรก 10,000 หักครึ่ง + ส่วนเกินอีกไม่เกิน 90,000</span></label>
+        <input type="text" class="money-input" id="life_insurance" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>เบี้ยประกันสุขภาพตนเอง <span class="hint">ไม่เกิน 25,000</span></label>
+        <input type="text" class="money-input" id="health_insurance" data-max="25000" placeholder="0">
+        <div class="cap-hint" id="health_insurance_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>ประกันสุขภาพบิดามารดา <span class="hint">ไม่เกิน 7,500</span></label>
+        <input type="text" class="money-input" id="parent_health" data-max="7500" placeholder="0">
+        <div class="cap-hint" id="parent_health_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>เงินสมทบประกันสังคม <span class="hint">ไม่เกิน 5,250</span></label>
+        <input type="text" class="money-input" id="social_security" data-max="5250" placeholder="0">
+        <div class="cap-hint" id="social_security_hint"></div>
+      </div>
+      <div class="form-group full-width" style="margin-top:8px;">
+        <label style="color:var(--primary);font-size:0.9rem;">— กลุ่มเกษียณ: บำนาญ + RMF + กอช. (รวมไม่เกิน 500,000) —</label>
+      </div>
+      <div class="form-group">
+        <label>ประกันชีวิตแบบบำนาญ <span class="hint">ไม่เกิน 15% ของรายได้, สูงสุด 100,000</span></label>
+        <input type="text" class="money-input" id="annuity" data-max="100000" placeholder="0">
+        <div class="cap-hint" id="annuity_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>RMF <span class="hint">ไม่เกิน 30% ของรายได้, สูงสุด 250,000</span></label>
+        <input type="text" class="money-input" id="rmf" data-max="250000" placeholder="0">
+        <div class="cap-hint" id="rmf_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>กอช. <span class="hint">ไม่เกิน 15,000</span></label>
+        <input type="text" class="money-input" id="nsf" data-max="15000" placeholder="0">
+        <div class="cap-hint" id="nsf_hint"></div>
+      </div>
+      <div class="form-group full-width" style="margin-top:8px;">
+        <label style="color:var(--primary);font-size:0.9rem;">— Thai ESG (แยกวง) —</label>
+      </div>
+      <div class="form-group">
+        <label>Thai ESG <span class="hint">ไม่เกิน 30% ของรายได้, สูงสุด 150,000</span></label>
+        <input type="text" class="money-input" id="thai_esg" data-max="150000" placeholder="0">
+        <div class="cap-hint" id="thai_esg_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>Thai ESGX <span class="hint">ไม่เกิน 25,000</span></label>
+        <input type="text" class="money-input" id="thai_esgx" data-max="25000" placeholder="0">
+        <div class="cap-hint" id="thai_esgx_hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DEDUCTIONS GROUP C ===== -->
+  <div class="card">
+    <div class="card-title">ค่าลดหย่อน — กระตุ้นเศรษฐกิจ (ครึ่งปี)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>ดอกเบี้ยที่อยู่อาศัย <span class="hint">ไม่เกิน 50,000</span></label>
+        <input type="text" class="money-input" id="home_loan" data-max="50000" placeholder="0">
+        <div class="cap-hint" id="home_loan_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>Solar Rooftop <span class="hint">ไม่เกิน 100,000</span></label>
+        <input type="text" class="money-input" id="solar_rooftop" data-max="100000" placeholder="0">
+        <div class="cap-hint" id="solar_rooftop_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>ค่าซื้องานทัศนศิลป์ <span class="hint">ไม่เกิน 50,000</span></label>
+        <input type="text" class="money-input" id="visual_art" data-max="50000" placeholder="0">
+        <div class="cap-hint" id="visual_art_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>วิสาหกิจเพื่อสังคม <span class="hint">ไม่เกิน 50,000</span></label>
+        <input type="text" class="money-input" id="social_enterprise" data-max="50000" placeholder="0">
+        <div class="cap-hint" id="social_enterprise_hint"></div>
+      </div>
+      <div class="form-group">
+        <label>ฉลากประหยัดไฟฟ้า 5 ดาว <span class="hint">ตามจริง</span></label>
+        <input type="text" class="money-input" id="energy_saving" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>กล้องวงจรปิด (เขตพัฒนาพิเศษ) <span class="hint">ตามจริง</span></label>
+        <input type="text" class="money-input" id="cctv" placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DEDUCTIONS GROUP D ===== -->
+  <div class="card">
+    <div class="card-title">ค่าลดหย่อน — บริจาค (ครึ่งปี — cap 5%)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>บริจาค 2 เท่า <span class="hint">การศึกษา/กีฬา/สาธารณประโยชน์</span></label>
+        <input type="text" class="money-input" id="donation_double" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>บริจาคทั่วไป</label>
+        <input type="text" class="money-input" id="donation_general" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>บริจาคพรรคการเมือง <span class="hint">ไม่เกิน 5,000</span></label>
+        <input type="text" class="money-input" id="political" data-max="5000" placeholder="0">
+        <div class="cap-hint" id="political_hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="calculate()">คำนวณภาษี ภ.ง.ด. 94</button>
+
+  <!-- ===== RESULTS ===== -->
+  <div id="results">
+    <div id="result-content"></div>
+    <div class="footer-note">
+      อ้างอิง: กรมสรรพากร — แบบ ภ.ง.ด. 94 ปีภาษี 2569
+      <br>โปรแกรมนี้ใช้เพื่อการศึกษาเท่านั้น ไม่ใช่คำแนะนำทางภาษีอย่างเป็นทางการ
+      <br><a href="calculator.html">→ คำนวณ ภ.ง.ด. 90/91 (เต็มปี)</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================================================
+// CONFIG — PND94 ครึ่งปี 2569
+// =============================================================================
+const C = {
+  brackets: [
+    { upper: 150000, rate: 0.00 },
+    { upper: 300000, rate: 0.05 },
+    { upper: 500000, rate: 0.10 },
+    { upper: 750000, rate: 0.15 },
+    { upper: 1000000, rate: 0.20 },
+    { upper: 2000000, rate: 0.25 },
+    { upper: 5000000, rate: 0.30 },
+    { upper: Infinity, rate: 0.35 },
+  ],
+  flatRate: 0.005,
+  flatThreshold: 1000000,
+  flatExemption: 5000,
+  expense405: { building: 0.30, farmland: 0.20, other_land: 0.15, vehicle: 0.30, other_property: 0.10 },
+  expense406: { medical: 0.60, law: 0.30, other_profession: 0.30 },
+  expense407: 0.60,
+  expense408: 0.40,
+  // Group A — halved
+  personal: 30000,
+  spouse: 30000,
+  child: 15000,
+  child2018: 30000,
+  pregnancy: 30000,
+  parent: 15000,
+  disabled: 30000,
+  // Group B — insurance
+  lifeFirstTier: 10000,
+  lifeFirstRate: 0.50,
+  lifeFirstCap: 5000,
+  lifeSecondCap: 90000,
+  lifeHealthCombined: 95000,
+  healthCap: 25000,
+  parentHealthCap: 7500,
+  socialSecCap: 5250,
+  // Retirement (annuity + RMF + กอช. only)
+  annuityRate: 0.15, annuityCap: 100000,
+  rmfRate: 0.30, rmfCap: 250000,
+  nsfCap: 15000,
+  retirementCap: 500000,
+  // ESG
+  esgRate: 0.30, esgCap: 150000,
+  esgxCap: 25000,
+  // Group C — halved
+  homeLoanCap: 50000,
+  solarCap: 100000,
+  artCap: 50000,
+  socialEntCap: 50000,
+  // Group D — halved
+  donDoubleRate: 2.0,
+  donDoublePct: 0.05,
+  donGeneralPct: 0.05,
+  politicalCap: 5000,
+};
+
+// =============================================================================
+// HELPERS
+// =============================================================================
+const $ = id => document.getElementById(id);
+const parseNum = str => Math.max(parseFloat(String(str).replace(/,/g, '')) || 0, 0);
+const val = id => parseNum($(id).value);
+const intVal = id => Math.max(parseInt($(id).value) || 0, 0);
+const fmt = n => n.toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+const pct = r => (r * 100).toFixed(0) + '%';
+
+function formatMoneyInput(input) {
+  const raw = input.value.replace(/,/g, '');
+  if (raw === '' || raw === '-') return;
+  const digits = raw.replace(/[^\d]/g, '');
+  if (digits === '') { input.value = ''; return; }
+  let num = parseInt(digits, 10);
+  const max = input.dataset.max ? parseFloat(input.dataset.max) : null;
+  const hintEl = $(input.id + '_hint');
+  if (max !== null && num > max) {
+    num = max;
+    input.classList.add('capped');
+    if (hintEl) hintEl.textContent = `ปรับลงเป็นเพดานสูงสุด ${fmt(max)} บาท`;
+  } else {
+    input.classList.remove('capped');
+    if (hintEl) hintEl.textContent = '';
+  }
+  const formatted = fmt(num);
+  const oldLen = input.value.length;
+  const cursorPos = input.selectionStart;
+  input.value = formatted;
+  const newLen = formatted.length;
+  const diff = newLen - oldLen;
+  input.setSelectionRange(cursorPos + diff, cursorPos + diff);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.money-input').forEach(input => {
+    input.addEventListener('input', () => formatMoneyInput(input));
+  });
+});
+
+// =============================================================================
+// LIFE INSURANCE — 2-tier special logic
+// =============================================================================
+function calcLifeInsurance(paid) {
+  if (paid <= 0) return 0;
+  const tier1Input = Math.min(paid, C.lifeFirstTier);
+  const tier1 = Math.min(tier1Input * C.lifeFirstRate, C.lifeFirstCap);
+  const tier2Input = Math.max(paid - C.lifeFirstTier, 0);
+  const tier2 = Math.min(tier2Input, C.lifeSecondCap);
+  return tier1 + tier2;
+}
+
+// =============================================================================
+// CALCULATION
+// =============================================================================
+function calculate() {
+  // --- Income ---
+  const i405 = val('income_405');
+  const i405sub = $('income_405_sub').value;
+  const i406 = val('income_406');
+  const i406sub = $('income_406_sub').value;
+  const i407 = val('income_407');
+  const i408 = val('income_408');
+  const totalIncome = i405 + i406 + i407 + i408;
+
+  // --- Expenses ---
+  const expenses = [];
+  let totalExp = 0;
+
+  if (i405 > 0) {
+    const r = C.expense405[i405sub] || 0.10;
+    const e = i405 * r;
+    expenses.push({ type: '40(5) ค่าเช่า', income: i405, expense: e, note: `เหมา ${pct(r)}` });
+    totalExp += e;
+  }
+  if (i406 > 0) {
+    const r = C.expense406[i406sub] || 0.30;
+    const e = i406 * r;
+    expenses.push({ type: '40(6) วิชาชีพอิสระ', income: i406, expense: e, note: `เหมา ${pct(r)}` });
+    totalExp += e;
+  }
+  if (i407 > 0) {
+    const e = i407 * C.expense407;
+    expenses.push({ type: '40(7) รับเหมา', income: i407, expense: e, note: 'เหมา 60%' });
+    totalExp += e;
+  }
+  if (i408 > 0) {
+    const e = i408 * C.expense408;
+    expenses.push({ type: '40(8) เงินได้อื่นๆ', income: i408, expense: e, note: 'เหมา 40%' });
+    totalExp += e;
+  }
+
+  const afterExp = totalIncome - totalExp;
+
+  // --- Deductions ---
+  const deds = [];
+  let totalDed = 0;
+
+  // Group A
+  deds.push({ name: 'ส่วนตัว', amount: C.personal });
+  totalDed += C.personal;
+
+  if ($('spouse_no_income').value === 'yes') {
+    deds.push({ name: 'คู่สมรส (ไม่มีเงินได้)', amount: C.spouse });
+    totalDed += C.spouse;
+  }
+
+  const cc = intVal('child_count');
+  if (cc > 0) { const a = cc * C.child; deds.push({ name: `บุตร (${cc} คน)`, amount: a }); totalDed += a; }
+
+  const cc18 = intVal('child_2018_count');
+  if (cc18 > 0) { const a = cc18 * C.child2018; deds.push({ name: `บุตรเกิด 2561+ (${cc18} คน)`, amount: a }); totalDed += a; }
+
+  const preg = val('pregnancy');
+  if (preg > 0) { const a = Math.min(preg, C.pregnancy); deds.push({ name: 'ฝากครรภ์/ทำคลอด', amount: a }); totalDed += a; }
+
+  const pc = intVal('parent_count');
+  if (pc > 0) { const a = pc * C.parent; deds.push({ name: `บิดามารดา (${pc} คน)`, amount: a }); totalDed += a; }
+
+  const dc = intVal('disabled_count');
+  if (dc > 0) { const a = dc * C.disabled; deds.push({ name: `ผู้พิการ (${dc} คน)`, amount: a }); totalDed += a; }
+
+  // Group B — Life insurance (special 2-tier)
+  const lifePaid = val('life_insurance');
+  let lifeDed = calcLifeInsurance(lifePaid);
+  let healthDed = Math.min(val('health_insurance'), C.healthCap);
+
+  // Combined life + health cap = 95,000
+  if (lifeDed + healthDed > C.lifeHealthCombined) {
+    const ratio = C.lifeHealthCombined / (lifeDed + healthDed);
+    lifeDed = Math.floor(lifeDed * ratio);
+    healthDed = C.lifeHealthCombined - lifeDed;
+  }
+
+  if (lifeDed > 0) {
+    let note = `จ่ายจริง ${fmt(lifePaid)}`;
+    if (lifePaid <= C.lifeFirstTier) {
+      note += ` → ส่วนแรก×50% = ${fmt(lifeDed)}`;
+    } else {
+      const t1 = C.lifeFirstCap;
+      const t2 = Math.min(lifePaid - C.lifeFirstTier, C.lifeSecondCap);
+      note += ` → tier1: ${fmt(t1)} + tier2: ${fmt(t2)}`;
+    }
+    deds.push({ name: 'ประกันชีวิต', amount: lifeDed, note });
+    totalDed += lifeDed;
+  }
+
+  if (healthDed > 0) {
+    deds.push({ name: 'ประกันสุขภาพ', amount: healthDed, note: `รวมชีวิต+สุขภาพ ≤ ${fmt(C.lifeHealthCombined)}` });
+    totalDed += healthDed;
+  }
+
+  const parentH = Math.min(val('parent_health'), C.parentHealthCap);
+  if (parentH > 0) { deds.push({ name: 'ประกันสุขภาพบิดามารดา', amount: parentH }); totalDed += parentH; }
+
+  const ss = Math.min(val('social_security'), C.socialSecCap);
+  if (ss > 0) { deds.push({ name: 'ประกันสังคม', amount: ss }); totalDed += ss; }
+
+  // Retirement group (annuity + RMF + กอช. only)
+  let retItems = [];
+  const ann = Math.min(val('annuity'), totalIncome * C.annuityRate, C.annuityCap);
+  if (ann > 0) retItems.push({ name: 'ประกันชีวิตบำนาญ', amount: ann });
+
+  const rmf = Math.min(val('rmf'), totalIncome * C.rmfRate, C.rmfCap);
+  if (rmf > 0) retItems.push({ name: 'RMF', amount: rmf });
+
+  const nsf = Math.min(val('nsf'), C.nsfCap);
+  if (nsf > 0) retItems.push({ name: 'กอช.', amount: nsf });
+
+  let retTotal = retItems.reduce((s, i) => s + i.amount, 0);
+  if (retTotal > C.retirementCap) {
+    const ratio = C.retirementCap / retTotal;
+    retItems.forEach(i => { i.amount = Math.floor(i.amount * ratio); });
+    retTotal = C.retirementCap;
+  }
+  retItems.forEach(i => {
+    deds.push({ name: i.name, amount: i.amount, note: 'กลุ่มเกษียณ (รวม ≤ 500,000)' });
+    totalDed += i.amount;
+  });
+
+  // Thai ESG
+  const esg = Math.min(val('thai_esg'), totalIncome * C.esgRate, C.esgCap);
+  if (esg > 0) { deds.push({ name: 'Thai ESG', amount: esg, note: 'แยกวง' }); totalDed += esg; }
+
+  const esgx = Math.min(val('thai_esgx'), C.esgxCap);
+  if (esgx > 0) { deds.push({ name: 'Thai ESGX', amount: esgx }); totalDed += esgx; }
+
+  // Group C
+  const hl = Math.min(val('home_loan'), C.homeLoanCap);
+  if (hl > 0) { deds.push({ name: 'ดอกเบี้ยที่อยู่อาศัย', amount: hl }); totalDed += hl; }
+
+  const solar = Math.min(val('solar_rooftop'), C.solarCap);
+  if (solar > 0) { deds.push({ name: 'Solar Rooftop', amount: solar }); totalDed += solar; }
+
+  const art = Math.min(val('visual_art'), C.artCap);
+  if (art > 0) { deds.push({ name: 'งานทัศนศิลป์', amount: art }); totalDed += art; }
+
+  const se = Math.min(val('social_enterprise'), C.socialEntCap);
+  if (se > 0) { deds.push({ name: 'วิสาหกิจเพื่อสังคม', amount: se }); totalDed += se; }
+
+  const es = val('energy_saving');
+  if (es > 0) { deds.push({ name: 'ฉลากประหยัดไฟฟ้า', amount: es, note: 'ตามจริง' }); totalDed += es; }
+
+  const cctv = val('cctv');
+  if (cctv > 0) { deds.push({ name: 'กล้องวงจรปิด', amount: cctv, note: 'ตามจริง' }); totalDed += cctv; }
+
+  // Group D — Donations (5% cap)
+  const baseDon = afterExp - totalDed;
+
+  const pol = Math.min(val('political'), C.politicalCap);
+  if (pol > 0) { deds.push({ name: 'บริจาคพรรคการเมือง', amount: pol }); totalDed += pol; }
+  const baseAfterPol = baseDon - pol;
+
+  let ddAmt = 0;
+  const ddActual = val('donation_double');
+  if (ddActual > 0) {
+    const doubled = ddActual * C.donDoubleRate;
+    const cap5 = Math.max(baseAfterPol * C.donDoublePct, 0);
+    ddAmt = Math.min(doubled, cap5);
+    deds.push({ name: 'บริจาค 2 เท่า', amount: ddAmt, note: `จ่าย ${fmt(ddActual)}, 2เท่า=${fmt(doubled)}, cap 5%=${fmt(cap5)}` });
+    totalDed += ddAmt;
+  }
+
+  const dgActual = val('donation_general');
+  if (dgActual > 0) {
+    const remBase = baseAfterPol - ddAmt;
+    const cap5 = Math.max(remBase * C.donGeneralPct, 0);
+    const dgAllow = Math.min(dgActual, cap5);
+    deds.push({ name: 'บริจาคทั่วไป', amount: dgAllow, note: `cap 5% ของฐานหลังหัก2เท่า = ${fmt(cap5)}` });
+    totalDed += dgAllow;
+  }
+
+  // --- Net Income ---
+  const netIncome = Math.max(afterExp - totalDed, 0);
+
+  // --- Progressive Tax ---
+  const brackets = [];
+  let rem = netIncome;
+  let prevU = 0;
+  let progTax = 0;
+  for (const b of C.brackets) {
+    if (rem <= 0) break;
+    const size = b.upper === Infinity ? rem : (b.upper - prevU);
+    const taxable = Math.min(rem, size);
+    const tax = taxable * b.rate;
+    brackets.push({ lower: prevU, upper: b.upper, rate: b.rate, taxable, tax });
+    progTax += tax;
+    rem -= taxable;
+    prevU = b.upper === Infinity ? prevU : b.upper;
+  }
+
+  // --- Flat Tax ---
+  let flatTax = 0, flatApplicable = false, flatExempted = false, flatReason = '';
+  if (totalIncome >= C.flatThreshold) {
+    flatApplicable = true;
+    const raw = totalIncome * C.flatRate;
+    if (raw <= C.flatExemption) {
+      flatExempted = true;
+      flatReason = `ภาษีเหมา ${fmt(raw)} ≤ ${fmt(C.flatExemption)} → ยกเว้น`;
+    } else {
+      flatTax = raw;
+      flatReason = `${fmt(totalIncome)} × 0.5% = ${fmt(flatTax)}`;
+    }
+  } else {
+    flatReason = `เงินได้รวม ${fmt(totalIncome)} < ${fmt(C.flatThreshold)} → ไม่ต้องคำนวณ`;
+  }
+
+  // --- Compare ---
+  let chosen, taxPay;
+  if (!flatApplicable || flatExempted) { chosen = 'progressive'; taxPay = progTax; }
+  else if (progTax >= flatTax) { chosen = 'progressive'; taxPay = progTax; }
+  else { chosen = 'flat'; taxPay = flatTax; }
+
+  // --- Render ---
+  renderResults({
+    totalIncome, expenses, totalExp, afterExp,
+    deds, totalDed, netIncome,
+    brackets, progTax,
+    flatApplicable, flatExempted, flatTax, flatReason,
+    chosen, taxPay,
+  });
+}
+
+// =============================================================================
+// RENDER
+// =============================================================================
+function renderResults(r) {
+  const el = $('result-content');
+  const maxTax = Math.max(...r.brackets.map(b => b.tax), 1);
+
+  let html = `
+    <div class="result-header">
+      <div class="tax-label">ภาษีที่ต้องชำระ (ครึ่งปี)</div>
+      <div class="tax-amount">${fmt(r.taxPay)} บาท</div>
+      <div class="tax-label">วิธี${r.chosen === 'progressive' ? 'ขั้นบันได' : 'เหมา 0.5%'} — ภ.ง.ด. 94</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title collapsible-toggle" onclick="toggleSection(this)">เงินได้พึงประเมิน (ม.ค.-มิ.ย.)</div>
+      <div class="collapsible-content">
+        <table class="result-table">
+          <tr><th>ประเภท</th><th>เงินได้</th><th>ค่าใช้จ่าย</th><th>หมายเหตุ</th></tr>
+          ${r.expenses.map(e => `
+            <tr>
+              <td>${e.type}</td>
+              <td class="amount">${fmt(e.income)}</td>
+              <td class="amount">${fmt(e.expense)}</td>
+              <td style="font-size:0.8rem;color:var(--text-light)">${e.note || ''}</td>
+            </tr>
+          `).join('')}
+          <tr class="total-row">
+            <td>รวม</td>
+            <td class="amount">${fmt(r.totalIncome)}</td>
+            <td class="amount">${fmt(r.totalExp)}</td>
+            <td></td>
+          </tr>
+        </table>
+        <p style="margin-top:12px;font-weight:600;">เงินได้หลังหักค่าใช้จ่าย: <span style="color:var(--primary)">${fmt(r.afterExp)} บาท</span></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title collapsible-toggle" onclick="toggleSection(this)">ค่าลดหย่อน (รวม ${fmt(r.totalDed)} บาท)</div>
+      <div class="collapsible-content">
+        <table class="result-table">
+          <tr><th>รายการ</th><th>จำนวน</th><th>หมายเหตุ</th></tr>
+          ${r.deds.map(d => `
+            <tr>
+              <td>${d.name}</td>
+              <td class="amount">${fmt(d.amount)}</td>
+              <td style="font-size:0.8rem;color:var(--text-light)">${d.note || ''}</td>
+            </tr>
+          `).join('')}
+          <tr class="total-row">
+            <td>รวมค่าลดหย่อน</td>
+            <td class="amount">${fmt(r.totalDed)}</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">เงินได้สุทธิ: ${fmt(r.netIncome)} บาท</div>
+      <p style="font-size:0.85rem;color:var(--text-light);">
+        ${fmt(r.afterExp)} − ${fmt(r.totalDed)} = ${fmt(r.netIncome)}
+      </p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">ภาษีขั้นบันได</div>
+      ${r.brackets.map(b => {
+        const barW = b.tax > 0 ? Math.max((b.tax / maxTax) * 100, 3) : 0;
+        return `
+          <div class="bracket-bar">
+            <span class="rate">${pct(b.rate)}</span>
+            <div class="bar"><div class="bar-fill" style="width:${barW}%"></div></div>
+            <span class="tax-val">${fmt(b.tax)}</span>
+          </div>
+        `;
+      }).join('')}
+      <div style="text-align:right;font-weight:700;margin-top:8px;font-size:1.1rem;color:var(--primary);">
+        รวม ${fmt(r.progTax)} บาท
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">เปรียบเทียบ 2 วิธี</div>
+      <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:12px;">${r.flatReason}</p>
+      <div class="comparison-box">
+        <div class="compare-item ${r.chosen === 'progressive' ? 'chosen' : ''}">
+          <div class="method-name">ขั้นบันได</div>
+          <div class="method-amount">${fmt(r.progTax)}</div>
+          ${r.chosen === 'progressive' ? '<div class="method-badge">ใช้วิธีนี้</div>' : ''}
+        </div>
+        <div class="compare-item ${r.chosen === 'flat' ? 'chosen' : ''}">
+          <div class="method-name">เหมา 0.5%</div>
+          <div class="method-amount">${r.flatApplicable && !r.flatExempted ? fmt(r.flatTax) : '-'}</div>
+          ${r.chosen === 'flat' ? '<div class="method-badge">ใช้วิธีนี้</div>' : ''}
+          ${!r.flatApplicable ? '<div style="font-size:0.75rem;color:var(--text-light);margin-top:4px;">ไม่ต้องคำนวณ</div>' : ''}
+          ${r.flatExempted ? '<div style="font-size:0.75rem;color:var(--text-light);margin-top:4px;">ได้รับยกเว้น</div>' : ''}
+        </div>
+      </div>
+    </div>
+  `;
+
+  el.innerHTML = html;
+  $('results').classList.add('visible');
+  $('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function toggleSection(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
+}
+</script>
+</body>
+</html>
