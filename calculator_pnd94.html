@@ -142,6 +142,39 @@
     background: white;
   }
 
+  .expense-item { grid-column: 1 / -1; margin-bottom: 4px; }
+  .expense-item-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .expense-item-header label { margin-bottom: 0; }
+  .expense-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .expense-toggle input[type="radio"] {
+    position: absolute; opacity: 0; width: 0; height: 0;
+  }
+  .expense-toggle .toggle-opt {
+    padding: 3px 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: all 0.15s;
+    user-select: none;
+    margin-bottom: 0;
+  }
+  .expense-toggle input[type="radio"]:checked + .toggle-opt {
+    background: var(--primary);
+    color: white;
+  }
+
   .btn {
     display: block;
     width: 100%;
@@ -310,34 +343,87 @@
         <input type="text" class="money-input" id="income_405" placeholder="0">
       </div>
       <div class="form-group">
-        <label>ประเภททรัพย์สิน 40(5)</label>
-        <select id="income_405_sub">
-          <option value="building">บ้าน/อาคาร (30%)</option>
-          <option value="farmland">ที่ดินเกษตร (20%)</option>
-          <option value="other_land">ที่ดินอื่น (15%)</option>
-          <option value="vehicle">ยานพาหนะ (30%)</option>
-          <option value="other_property">ทรัพย์สินอื่น (10%)</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label>40(6) วิชาชีพอิสระ</label>
         <input type="text" class="money-input" id="income_406" placeholder="0">
       </div>
       <div class="form-group">
-        <label>ประเภทวิชาชีพ 40(6)</label>
-        <select id="income_406_sub">
-          <option value="medical">การแพทย์ (60%)</option>
-          <option value="law">กฎหมาย/วิศวกรรม/บัญชี (30%)</option>
-          <option value="other_profession">อื่นๆ (30%)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>40(7) รับเหมา <span class="hint">เหมา 60%</span></label>
+        <label>40(7) รับเหมา</label>
         <input type="text" class="money-input" id="income_407" placeholder="0">
       </div>
       <div class="form-group">
-        <label>40(8) เงินได้อื่นๆ <span class="hint">เหมา 40%</span></label>
+        <label>40(8) เงินได้อื่นๆ</label>
         <input type="text" class="money-input" id="income_408" placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EXPENSES ===== -->
+  <div class="card">
+    <div class="card-title">ค่าใช้จ่าย</div>
+    <div class="form-grid">
+      <!-- 40(5) -->
+      <div class="expense-item">
+        <div class="expense-item-header">
+          <label>40(5) ค่าเช่าทรัพย์สิน</label>
+          <div class="expense-toggle">
+            <input type="radio" name="exp405_method" id="exp405_flat" value="flat" checked onchange="toggleExpense('405')">
+            <label for="exp405_flat" class="toggle-opt">เหมา</label>
+            <input type="radio" name="exp405_method" id="exp405_actual" value="actual" onchange="toggleExpense('405')">
+            <label for="exp405_actual" class="toggle-opt">ตามจริง</label>
+          </div>
+        </div>
+        <div id="exp405_flat_ui">
+          <select id="income_405_sub">
+            <option value="building">บ้าน/อาคาร (30%)</option>
+            <option value="farmland">ที่ดินเกษตร (20%)</option>
+            <option value="other_land">ที่ดินอื่น (15%)</option>
+            <option value="vehicle">ยานพาหนะ (30%)</option>
+            <option value="other_property">ทรัพย์สินอื่น (10%)</option>
+          </select>
+        </div>
+        <div id="exp405_actual_ui" style="display:none;"><input type="text" class="money-input" id="expense_405" placeholder="0"></div>
+      </div>
+
+      <!-- 40(6) -->
+      <div class="expense-item">
+        <div class="expense-item-header">
+          <label>40(6) วิชาชีพอิสระ</label>
+          <div class="expense-toggle">
+            <input type="radio" name="exp406_method" id="exp406_flat" value="flat" checked onchange="toggleExpense('406')">
+            <label for="exp406_flat" class="toggle-opt">เหมา</label>
+            <input type="radio" name="exp406_method" id="exp406_actual" value="actual" onchange="toggleExpense('406')">
+            <label for="exp406_actual" class="toggle-opt">ตามจริง</label>
+          </div>
+        </div>
+        <div id="exp406_flat_ui">
+          <select id="income_406_sub">
+            <option value="medical">การแพทย์ (60%)</option>
+            <option value="law">กฎหมาย/วิศวกรรม/บัญชี (30%)</option>
+            <option value="other_profession">อื่นๆ (30%)</option>
+          </select>
+        </div>
+        <div id="exp406_actual_ui" style="display:none;"><input type="text" class="money-input" id="expense_406" placeholder="0"></div>
+      </div>
+
+      <!-- 40(7) -->
+      <div class="expense-item">
+        <div class="expense-item-header">
+          <label>40(7) รับเหมา</label>
+          <div class="expense-toggle">
+            <input type="radio" name="exp407_method" id="exp407_flat" value="flat" checked onchange="toggleExpense('407')">
+            <label for="exp407_flat" class="toggle-opt">เหมา</label>
+            <input type="radio" name="exp407_method" id="exp407_actual" value="actual" onchange="toggleExpense('407')">
+            <label for="exp407_actual" class="toggle-opt">ตามจริง</label>
+          </div>
+        </div>
+        <div id="exp407_flat_ui"><span style="font-size:0.85rem;color:var(--text-light);">เหมา 60%</span></div>
+        <div id="exp407_actual_ui" style="display:none;"><input type="text" class="money-input" id="expense_407" placeholder="0"></div>
+      </div>
+
+      <!-- 40(8) — ตามจริงอย่างเดียว -->
+      <div class="form-group">
+        <label>ค่าใช้จ่าย 40(8) <span class="hint">ตามจริง (ไม่เกินรายได้)</span></label>
+        <input type="text" class="money-input" id="expense_408" placeholder="0">
       </div>
     </div>
   </div>
@@ -609,6 +695,15 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// Toggle expense method (เหมา / ตามจริง)
+function toggleExpense(type) {
+  const isFlat = $('exp' + type + '_flat').checked;
+  const flatUI = $('exp' + type + '_flat_ui');
+  const actualUI = $('exp' + type + '_actual_ui');
+  if (flatUI) flatUI.style.display = isFlat ? '' : 'none';
+  if (actualUI) actualUI.style.display = isFlat ? 'none' : '';
+}
+
 // =============================================================================
 // LIFE INSURANCE — 2-tier special logic
 // =============================================================================
@@ -639,25 +734,47 @@ function calculate() {
   let totalExp = 0;
 
   if (i405 > 0) {
-    const r = C.expense405[i405sub] || 0.10;
-    const e = i405 * r;
-    expenses.push({ type: '40(5) ค่าเช่า', income: i405, expense: e, note: `เหมา ${pct(r)}` });
+    let e, note;
+    if ($('exp405_flat').checked) {
+      const r = C.expense405[i405sub] || 0.10;
+      e = i405 * r;
+      note = `เหมา ${pct(r)}`;
+    } else {
+      e = Math.min(val('expense_405'), i405);
+      note = 'ตามจริง';
+    }
+    expenses.push({ type: '40(5) ค่าเช่า', income: i405, expense: e, note });
     totalExp += e;
   }
   if (i406 > 0) {
-    const r = C.expense406[i406sub] || 0.30;
-    const e = i406 * r;
-    expenses.push({ type: '40(6) วิชาชีพอิสระ', income: i406, expense: e, note: `เหมา ${pct(r)}` });
+    let e, note;
+    if ($('exp406_flat').checked) {
+      const r = C.expense406[i406sub] || 0.30;
+      e = i406 * r;
+      note = `เหมา ${pct(r)}`;
+    } else {
+      e = Math.min(val('expense_406'), i406);
+      note = 'ตามจริง';
+    }
+    expenses.push({ type: '40(6) วิชาชีพอิสระ', income: i406, expense: e, note });
     totalExp += e;
   }
   if (i407 > 0) {
-    const e = i407 * C.expense407;
-    expenses.push({ type: '40(7) รับเหมา', income: i407, expense: e, note: 'เหมา 60%' });
+    let e, note;
+    if ($('exp407_flat').checked) {
+      e = i407 * C.expense407;
+      note = 'เหมา 60%';
+    } else {
+      e = Math.min(val('expense_407'), i407);
+      note = 'ตามจริง';
+    }
+    expenses.push({ type: '40(7) รับเหมา', income: i407, expense: e, note });
     totalExp += e;
   }
   if (i408 > 0) {
-    const e = i408 * C.expense408;
-    expenses.push({ type: '40(8) เงินได้อื่นๆ', income: i408, expense: e, note: 'เหมา 40%' });
+    const actualExp408 = val('expense_408');
+    const e = Math.min(actualExp408, i408); // ไม่เกินรายได้
+    expenses.push({ type: '40(8) เงินได้อื่นๆ', income: i408, expense: e, note: 'ตามจริง' });
     totalExp += e;
   }
 
